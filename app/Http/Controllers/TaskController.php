@@ -1,10 +1,15 @@
 <?php
+
 namespace App\Http\Controllers;
+
+use App\Task;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+
 class TaskController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      *
@@ -12,8 +17,10 @@ class TaskController extends Controller
      */
     public function index()
     {
-        //
+
+        return Task::all();
     }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -23,6 +30,7 @@ class TaskController extends Controller
     {
         //
     }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -31,8 +39,10 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $task = new Task();
+        $this->saveTask($request, $task);
     }
+
     /**
      * Display the specified resource.
      *
@@ -41,8 +51,9 @@ class TaskController extends Controller
      */
     public function show($id)
     {
-        //
+        return $task = Task::findOrFail($id);
     }
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -53,6 +64,7 @@ class TaskController extends Controller
     {
         //
     }
+
     /**
      * Update the specified resource in storage.
      *
@@ -62,8 +74,10 @@ class TaskController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $task = Task::finOrFail($id);
+        $this->saveTask($request, $task);
     }
+
     /**
      * Remove the specified resource from storage.
      *
@@ -72,6 +86,18 @@ class TaskController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Task::destroy($id);
+    }
+
+    /**
+     * @param Request $request
+     * @param $task
+     */
+    public function saveTask(Request $request, $task)
+    {
+        $task->name = $request->name;
+        $task->done = $request->done;
+        $task->priority = $request->priority;
+        $task->save();
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Tag;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -15,8 +16,9 @@ class TagController extends Controller
      */
     public function index()
     {
-        //
+        return Tag::all();
     }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -26,6 +28,7 @@ class TagController extends Controller
     {
         //
     }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -34,8 +37,10 @@ class TagController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $tag = new Tag();
+        $this->saveTag($request, $tag);
     }
+
     /**
      * Display the specified resource.
      *
@@ -44,8 +49,9 @@ class TagController extends Controller
      */
     public function show($id)
     {
-        //
+        return $tag = Tag::findOrFail($id);
     }
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -56,6 +62,7 @@ class TagController extends Controller
     {
         //
     }
+
     /**
      * Update the specified resource in storage.
      *
@@ -65,7 +72,8 @@ class TagController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $tag = Tag::findOrFail($id);
+        $this->saveTag($request, $tag);
     }
 
     /**
@@ -76,6 +84,15 @@ class TagController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Tag::destroy($id);
+    }
+    /**
+     * @param Request $request
+     * @param $tag
+     */
+    public function saveTag(Request $request, $tag)
+    {
+        $tag->name = $request->name;
+        $tag->save();
     }
 }
