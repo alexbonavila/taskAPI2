@@ -1,11 +1,9 @@
 <?php
 
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-
 class TagsAPITest extends TestCase
 {
     use DatabaseMigrations;
-
     /**
      * A basic functional test example.
      *
@@ -15,7 +13,6 @@ class TagsAPITest extends TestCase
     {
         $this->get('/tag')->seeJson()->seeStatusCode(200);
     }
-
     /**
      * Test tags in database are listed by API
      *
@@ -31,7 +28,6 @@ class TagsAPITest extends TestCase
                 ]
             ])->seeStatusCode(200);
     }
-
     /**
      * Test tag Return 404 on tag not exsists
      *
@@ -41,7 +37,6 @@ class TagsAPITest extends TestCase
     {
         $this->get('/tag/500')->seeJson()->seeStatusCode(404);
     }
-
     /**
      * Test tags in database is shown by API
      *
@@ -54,7 +49,6 @@ class TagsAPITest extends TestCase
             ->seeJsonContains(['title' => $tag->title])
             ->seeStatusCode(200);
     }
-
     /**
      * Create fake tag
      *
@@ -67,7 +61,6 @@ class TagsAPITest extends TestCase
         $tag->save();
         return $tag;
     }
-
     /**
      * Create fake tags
      *
@@ -79,7 +72,6 @@ class TagsAPITest extends TestCase
             $this->createFakeTag();
         }
     }
-
     /**
      * Test tags can be posted and saved to database
      *
@@ -91,7 +83,6 @@ class TagsAPITest extends TestCase
         $this->post('/tag',$data)->seeInDatabase('tags',$data);
         $this->get('/tag')->seeJsonContains($data)->seeStatusCode(200);
     }
-
     /**
      * Test tags can be update and see changes on database
      *
@@ -104,7 +95,6 @@ class TagsAPITest extends TestCase
         $this->put('/tag/' . $tag->id, $data)->seeInDatabase('tags',$data);
         $this->get('/tag')->seeJsonContains($data)->seeStatusCode(200);
     }
-
     /**
      * Test tagss can be deleted and not see on database
      *
@@ -116,5 +106,14 @@ class TagsAPITest extends TestCase
         $data = [ 'title' => $tag->title];
         $this->delete('/tag/' . $tag->id)->notSeeInDatabase('tags',$data);
         $this->get('/tag')->dontSeeJson($data)->seeStatusCode(200);
+    }
+    /**
+     * Test tag when not auth redirect to /auth/login and see message
+     *
+     * @return void
+     */
+    public function testTasksReturnLoginPageWhenNotAuth()
+    {
+        $this->visit('/tag')->seePageIs('/auth/login')->see("No tens acces a la API");
     }
 }

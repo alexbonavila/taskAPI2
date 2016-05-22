@@ -1,15 +1,12 @@
 <?php
 
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-
 /**
  * Class TasksAPITest
  */
 class TasksAPITest extends TestCase
 {
-
     use DatabaseMigrations;
-
     /**
      * Test tasks is an api then returns JSON
      *
@@ -19,7 +16,6 @@ class TasksAPITest extends TestCase
     {
         $this->get('/task')->seeJson()->seeStatusCode(200);
     }
-
     /**
      * Test tasks in database are listed by API
      *
@@ -35,7 +31,6 @@ class TasksAPITest extends TestCase
                 ]
             ])->seeStatusCode(200);
     }
-
     /**
      * Test task Return 404 on task not exsists
      *
@@ -45,7 +40,6 @@ class TasksAPITest extends TestCase
     {
         $this->get('/task/500')->seeJson()->seeStatusCode(404);
     }
-
     /**
      * Test task in database is shown by API
      *
@@ -58,7 +52,6 @@ class TasksAPITest extends TestCase
             ->seeJsonContains(['name' => $task->name, 'some_bool' => $task->done, 'priority' => $task->priority ])
             ->seeStatusCode(200);
     }
-
     /**
      * Create fake task
      *
@@ -73,7 +66,6 @@ class TasksAPITest extends TestCase
         $task->save();
         return $task;
     }
-
     /**
      * Create fake tasks
      *
@@ -85,7 +77,6 @@ class TasksAPITest extends TestCase
             $this->createFakeTask();
         }
     }
-
     /**
      * Test tasks can be posted and saved to database
      *
@@ -97,7 +88,6 @@ class TasksAPITest extends TestCase
         $this->post('/task',$data)->seeInDatabase('tasks',$data);
         $this->get('/task')->seeJsonContains(['name' => 'Foobar', 'some_bool' => true, 'priority' => 1])->seeStatusCode(200);
     }
-
     /**
      * Test tasks can be update and see changes on database
      *
@@ -110,7 +100,6 @@ class TasksAPITest extends TestCase
         $this->put('/task/' . $task->id, $data)->seeInDatabase('tasks',$data);
         $this->get('/task')->seeJsonContains(['name' => 'Learn Laravel', 'some_bool' => false , 'priority' => 3])->seeStatusCode(200);
     }
-
     /**
      * Test tasks can be deleted and not see on database
      *
@@ -122,5 +111,14 @@ class TasksAPITest extends TestCase
         $data = [ 'name' => $task->name, 'done' => $task->done , 'priority' => $task->priority];
         $this->delete('/task/' . $task->id)->notSeeInDatabase('tasks',$data);
         $this->get('/task')->dontSeeJson($data)->seeStatusCode(200);
+    }
+    /**
+     * Test tasks when not auth redirect to /auth/login and see message
+     *
+     * @return void
+     */
+    public function testTasksReturnLoginPageWhenNotAuth()
+    {
+        $this->visit('/task')->seePageIs('/auth/login')->see("No tens acces a la API");
     }
 }

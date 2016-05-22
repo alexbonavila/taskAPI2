@@ -30,6 +30,7 @@ class TagController extends ApiController
     {
         $this->tagTransformer = $tagTransformer;
         //$this->middleware('auth.basic', ['only' => 'store']);
+        $this->middleware('auth');
     }
 
     /**

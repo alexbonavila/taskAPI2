@@ -20,6 +20,7 @@ class TaskController extends ApiController
     {
         $this->taskTransformer = $taskTransformer;
         //$this->middleware('auth.basic', ['only' => 'store']);
+        $this->middleware('auth');
     }
 
     /**
