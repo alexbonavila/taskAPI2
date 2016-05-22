@@ -6,6 +6,7 @@ use App\Task;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Response;
 
 class TaskController extends Controller
 {
@@ -17,10 +18,13 @@ class TaskController extends Controller
      */
     public function index()
     {
+        //return Task::all();
 
-        return Task::all();
+        $tasks = Task::all();
+        return Response::json([
+            'data' => $tasks->toArray()
+        ],200);
     }
-
     /**
      * Show the form for creating a new resource.
      *
@@ -51,7 +55,21 @@ class TaskController extends Controller
      */
     public function show($id)
     {
-        return $task = Task::findOrFail($id);
+        $task = Task::find($id);
+
+        if (! $task) {
+            return Response::json([
+                'error' => [
+                    'message' => 'Task does not exsist'
+                ]
+            ], 404);
+        }
+
+        return Response::json([
+        'data' => $task->toArray()
+        ],200);
+
+        //$task = Task::where('id', $id)->first();
     }
 
     /**
