@@ -14,8 +14,8 @@ class CreateTagsTable extends Migration
     {
         Schema::create('tags', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
-            $table->boolean('prova');
+            $table->string('title');
+            //$table->boolean('prova');
             $table->timestamps();
         });
     }
@@ -27,6 +27,6 @@ class CreateTagsTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::drop('tags');
     }
 }

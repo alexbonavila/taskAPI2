@@ -1,9 +1,9 @@
 <?php
 
+
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-
-class CreateTasksTable extends Migration
+class CreateTasksTagsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,15 +12,12 @@ class CreateTasksTable extends Migration
      */
     public function up()
     {
-        Schema::create('tasks', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('name');
-            $table->boolean('done');
-            $table->integer('priority');
+        Schema::create('task_tag', function (Blueprint $table) {
+            $table->integer('task_id');
+            $table->integer('tag_id');
             $table->timestamps();
         });
     }
-
     /**
      * Reverse the migrations.
      *
@@ -28,6 +25,6 @@ class CreateTasksTable extends Migration
      */
     public function down()
     {
-        Schema::drop('tasks');
+        Schema::drop('task_tag');
     }
 }

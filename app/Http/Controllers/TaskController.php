@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
 use Acme\Transformers\TaskTransformer;
 use App\Task;
 use Illuminate\Http\Request;
@@ -12,6 +11,7 @@ use Illuminate\Support\Facades\Input;
 class TaskController extends ApiController
 {
     protected $taskTransformer;
+
     /**
      * TaskController constructor.
      * @param $taskTransformer
@@ -19,8 +19,7 @@ class TaskController extends ApiController
     public function __construct(TaskTransformer $taskTransformer)
     {
         $this->taskTransformer = $taskTransformer;
-
-        $this->middleware('auth.basic', ['only' => 'store']);
+        //$this->middleware('auth.basic', ['only' => 'store']);
     }
 
     /**
@@ -30,14 +29,12 @@ class TaskController extends ApiController
      */
     public function index()
     {
+        //1. No és retorna: paginació
         //return Task::all();
-
         $task = Task::all();
-
-        return $this->respond([
-            'data' => $this->taskTransformer->transformCollection($task->all())
-        ]);
+        return $this->respond($this->taskTransformer->transformCollection($task->all()));
     }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -50,12 +47,11 @@ class TaskController extends ApiController
 
     /**
      * Store a newly created resource in storage.
-     * @return IlluminateResponse
-     * @internal param Request $request
+     *  @return \Illuminate\Http\Response
      */
     public function store()
     {
-        if (! Input::get('name') or ! Input::get('done') or ! Input::get('priority'))
+        if (!Input::get('name') or !Input::get('done') or !Input::get('priority'))
         {
             return $this->setStatusCode(IlluminateResponse::HTTP_UNPROCESSABLE_ENTITY)
                 ->respondWithError('Parameters failed validation for a task.');
@@ -67,17 +63,15 @@ class TaskController extends ApiController
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
         $task = Task::find($id);
-
         if (!$task) {
             return $this->respondNotFound('Task does not exsist');
         }
-
         return $this->respond([
             'data' => $this->taskTransformer->transform($task)
         ]);
@@ -86,7 +80,7 @@ class TaskController extends ApiController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -97,20 +91,27 @@ class TaskController extends ApiController
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        $task = Task::finOrFail($id);
-        $this->saveTask($request, $task);
+        $task = Task::find($id);
+        if (!$task)
+        {
+            return $this->respondNotFound('Task does not exist!!');
+        }
+        $task->name = $request->name;
+        $task->priority = $request->priority;
+        $task->done = $request->done;
+        $task->save();
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

@@ -104,7 +104,7 @@ class TagsAPITest extends TestCase
         $this->put('/tag/' . $tag->id, $data)->seeInDatabase('tags',$data);
         $this->get('/tag')->seeJsonContains($data)->seeStatusCode(200);
     }
-    
+
     /**
      * Test tagss can be deleted and not see on database
      *
