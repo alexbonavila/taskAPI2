@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Acme\Transformers\TaskTransformer;
 use App\Task;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -10,6 +11,15 @@ use Response;
 
 class TaskController extends Controller
 {
+    protected $taskTransformer;
+    /**
+     * TaskController constructor.
+     * @param $taskTransformer
+     */
+    public function __construct(TaskTransformer $taskTransformer)
+    {
+        $this->taskTransformer = $taskTransformer;
+    }
 
     /**
      * Display a listing of the resource.
@@ -23,7 +33,7 @@ class TaskController extends Controller
         $task = Task::all();
 
         return Response::json([
-            'data' => $this->transformCollection($task)
+            'data' => $this->taskTransformer->transformCollection($task->all())
         ],200);
     }
     /**
@@ -118,18 +128,5 @@ class TaskController extends Controller
         $task->done = $request->done;
         $task->priority = $request->priority;
         $task->save();
-    }
-
-    private function transformCollection($task)
-    {
-        return array_map([$this, 'transform'], $task->toArray());
-    }
-    private function transform($task)
-    {
-        return [
-            'name' => $task['name'],
-            'some_bool' => $task['done'],
-            'priority' => (boolean) $task['priority'],
-        ];
     }
 }
