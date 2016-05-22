@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
+
 use Acme\Transformers\TaskTransformer;
 use App\Task;
 use Illuminate\Http\Request;
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use Response;
 
-class TaskController extends Controller
+class TaskController extends ApiController
 {
     protected $taskTransformer;
     /**
@@ -32,9 +30,9 @@ class TaskController extends Controller
 
         $task = Task::all();
 
-        return Response::json([
+        return $this->respond([
             'data' => $this->taskTransformer->transformCollection($task->all())
-        ],200);
+        ]);
     }
     /**
      * Show the form for creating a new resource.
@@ -69,18 +67,12 @@ class TaskController extends Controller
         $task = Task::find($id);
 
         if (!$task) {
-            return Response::json([
-                'error' => [
-                    'message' => 'Task does not exsist'
-                ]
-            ], 404);
+            return $this->respondNotFound('Task does not exsist');
         }
 
-        return Response::json([
-        'data' => $this->transform($task)
-        ],200);
-
-        //$task = Task::where('id', $id)->first();
+        return $this->respond([
+            'data' => $this->taskTransformer->transform($task)
+        ]);
     }
 
     /**
