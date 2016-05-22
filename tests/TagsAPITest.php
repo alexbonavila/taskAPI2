@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
+
 class TagsAPITest extends TestCase
 {
     use DatabaseMigrations;
@@ -11,6 +13,7 @@ class TagsAPITest extends TestCase
      */
     public function testTagsUseJson()
     {
+        $this->withoutMiddleware();
         $this->get('/tag')->seeJson()->seeStatusCode(200);
     }
     /**
@@ -20,6 +23,7 @@ class TagsAPITest extends TestCase
      */
     public function testTagsInDatabaseAreListedByAPI()
     {
+        $this->withoutMiddleware();
         $this->createFakeTags();
         $this->get('/tag')
             ->seeJsonStructure([
@@ -35,6 +39,7 @@ class TagsAPITest extends TestCase
      */
     public function testTagsReturn404OnTaskNotExsists()
     {
+        $this->withoutMiddleware();
         $this->get('/tag/500')->seeJson()->seeStatusCode(404);
     }
     /**
@@ -44,6 +49,7 @@ class TagsAPITest extends TestCase
      */
     public function testTagsInDatabaseAreShownByAPI()
     {
+        $this->withoutMiddleware();
         $tag = $this->createFakeTag();
         $this->get('/tag/' . $tag->id)
             ->seeJsonContains(['title' => $tag->title])
@@ -68,6 +74,7 @@ class TagsAPITest extends TestCase
      * @return \App\Tag
      */
     private function createFakeTags($count = 10) {
+        $this->withoutMiddleware();
         foreach (range(0,$count) as $number) {
             $this->createFakeTag();
         }
@@ -79,6 +86,7 @@ class TagsAPITest extends TestCase
      */
     public function testTagsCanBePostedAndSavedIntoDatabase()
     {
+        $this->withoutMiddleware();
         $data = ['title' => 'Foobar'];
         $this->post('/tag',$data)->seeInDatabase('tags',$data);
         $this->get('/tag')->seeJsonContains($data)->seeStatusCode(200);
@@ -90,6 +98,7 @@ class TagsAPITest extends TestCase
      */
     public function testTagsCanBeUpdatedAndSeeChangesInDatabase()
     {
+        $this->withoutMiddleware();
         $tag = $this->createFakeTag();
         $data = [ 'title' => 'Learn Laravel'];
         $this->put('/tag/' . $tag->id, $data)->seeInDatabase('tags',$data);
@@ -102,6 +111,7 @@ class TagsAPITest extends TestCase
      */
     public function testTagsCanBeDeletedAndNotSeenOnDatabase()
     {
+        $this->withoutMiddleware();
         $tag = $this->createFakeTag();
         $data = [ 'title' => $tag->title];
         $this->delete('/tag/' . $tag->id)->notSeeInDatabase('tags',$data);
@@ -112,7 +122,7 @@ class TagsAPITest extends TestCase
      *
      * @return void
      */
-    public function testTasksReturnLoginPageWhenNotAuth()
+    public function testTagsReturnLoginPageWhenNotAuth()
     {
         $this->visit('/tag')->seePageIs('/auth/login')->see("No tens acces a la API");
     }
