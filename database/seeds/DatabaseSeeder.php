@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
      */
     private function seedTasks($faker)
     {
+
         foreach (range(0,100) as $item) {
             $task = new Task();
             $task->name = $faker->sentence();
