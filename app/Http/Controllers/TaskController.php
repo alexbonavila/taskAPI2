@@ -6,6 +6,8 @@ namespace App\Http\Controllers;
 use Acme\Transformers\TaskTransformer;
 use App\Task;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response as IlluminateResponse;
+use Illuminate\Support\Facades\Input;
 
 class TaskController extends ApiController
 {
@@ -17,6 +19,8 @@ class TaskController extends ApiController
     public function __construct(TaskTransformer $taskTransformer)
     {
         $this->taskTransformer = $taskTransformer;
+
+        $this->middleware('auth.basic', ['only' => 'store']);
     }
 
     /**
@@ -46,14 +50,18 @@ class TaskController extends ApiController
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return IlluminateResponse
+     * @internal param Request $request
      */
-    public function store(Request $request)
+    public function store()
     {
-        $task = new Task();
-        $this->saveTask($request, $task);
+        if (! Input::get('name') or ! Input::get('done') or ! Input::get('priority'))
+        {
+            return $this->setStatusCode(IlluminateResponse::HTTP_UNPROCESSABLE_ENTITY)
+                ->respondWithError('Parameters failed validation for a task.');
+        }
+        Task::create(Input::all());
+        return $this->respondCreated('Task successfully created.');
     }
 
     /**
@@ -108,17 +116,5 @@ class TaskController extends ApiController
     public function destroy($id)
     {
         Task::destroy($id);
-    }
-
-    /**
-     * @param Request $request
-     * @param $task
-     */
-    public function saveTask(Request $request, $task)
-    {
-        $task->name = $request->name;
-        $task->done = $request->done;
-        $task->priority = $request->priority;
-        $task->save();
     }
 }
