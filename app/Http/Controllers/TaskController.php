@@ -20,9 +20,10 @@ class TaskController extends Controller
     {
         //return Task::all();
 
-        $tasks = Task::all();
+        $task = Task::all();
+
         return Response::json([
-            'data' => $tasks->toArray()
+            'data' => $this->transformCollection($task)
         ],200);
     }
     /**
@@ -57,7 +58,7 @@ class TaskController extends Controller
     {
         $task = Task::find($id);
 
-        if (! $task) {
+        if (!$task) {
             return Response::json([
                 'error' => [
                     'message' => 'Task does not exsist'
@@ -66,7 +67,7 @@ class TaskController extends Controller
         }
 
         return Response::json([
-        'data' => $task->toArray()
+        'data' => $this->transform($task)
         ],200);
 
         //$task = Task::where('id', $id)->first();
@@ -117,5 +118,18 @@ class TaskController extends Controller
         $task->done = $request->done;
         $task->priority = $request->priority;
         $task->save();
+    }
+
+    private function transformCollection($task)
+    {
+        return array_map([$this, 'transform'], $task->toArray());
+    }
+    private function transform($task)
+    {
+        return [
+            'name' => $task['name'],
+            'some_bool' => $task['done'],
+            'priority' => (boolean) $task['priority'],
+        ];
     }
 }
