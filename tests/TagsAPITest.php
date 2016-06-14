@@ -117,13 +117,4 @@ class TagsAPITest extends TestCase
         $this->delete('/tag/' . $tag->id)->notSeeInDatabase('tags',$data);
         $this->get('/tag')->dontSeeJson($data)->seeStatusCode(200);
     }
-    /**
-     * Test tag when not auth redirect to /auth/login and see message
-     *
-     * @return void
-     */
-    public function testTagsReturnLoginPageWhenNotAuth()
-    {
-        $this->visit('/tag')->seePageIs('/auth/login')->see("No tens acces a la API");
-    }
 }

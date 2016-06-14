@@ -122,13 +122,4 @@ class TasksAPITest extends TestCase
         $this->delete('/task/' . $task->id)->notSeeInDatabase('tasks',$data);
         $this->get('/task')->dontSeeJson($data)->seeStatusCode(200);
     }
-    /**
-     * Test tasks when not auth redirect to /auth/login and see message
-     *
-     * @return void
-     */
-    public function testTasksReturnLoginPageWhenNotAuth()
-    {
-        $this->visit('/task')->seePageIs('/auth/login')->see("No tens acces a la API");
-    }
 }
